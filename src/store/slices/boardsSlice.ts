@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { IBoard } from "../../types";
 
 type TBoardsState = {
@@ -6,12 +6,16 @@ type TBoardsState = {
   boardArray: IBoard[];
 }
 
+type TAddBoardAction = {
+  board: IBoard;
+}
+
 const initialState : TBoardsState = {
   modalActive: false,
   boardArray: [
     {
       boardId: 'board-0',
-      boardName: 'first',
+      boardName: '첫번째 게시물',
       lists: [
         {
           listId: 'list-0',
@@ -27,7 +31,7 @@ const initialState : TBoardsState = {
               taskId: 'task-1',
               taskName: 'task 2',
               taskDescription: 'Description',
-              taskOwner: 'Alis',
+              taskOwner: 'Allis',
             }
           ]
         },
@@ -50,6 +54,48 @@ const initialState : TBoardsState = {
           ]
         }
       ]
+    },
+    {
+      boardId: 'board-1',
+      boardName: '두번째 게시물',
+      lists: [
+        {
+          listId: 'list-2',
+          listName: 'list 3',
+          tasks: [
+            {
+              taskId: 'task-4',
+              taskName: 'task 5',
+              taskDescription: 'Description',
+              taskOwner: 'Khan',
+            },
+            {
+              taskId: 'task-5',
+              taskName: 'task 6',
+              taskDescription: 'Description',
+              taskOwner: 'Faker',
+            }
+          ]
+        },
+        {
+          listId: 'list-6',
+          listName: 'list 7',
+          tasks: [
+            {
+              taskId: 'task-2',
+              taskName: 'task 3',
+              taskDescription: 'Description',
+              taskOwner: 'Tom',
+            },
+            {
+              taskId: 'task-7',
+              taskName: 'task 8',
+              taskDescription: 'Description',
+              taskOwner: 'James',
+            }
+          ]
+        }
+      ]
     }
   ]
 }
@@ -58,8 +104,12 @@ const boardsSlice = createSlice({
   name: 'boards',
   initialState,
   reducers: {
-
+    addBoard: (state, {payload}: PayloadAction<TAddBoardAction>) => {
+      state.boardArray.push(payload.board);
+    }
   }
 });
+
+export const { addBoard } = boardsSlice.actions;
 
 export const boardsReducer = boardsSlice.reducer;
