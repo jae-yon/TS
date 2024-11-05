@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FC, useState } from 'react'
+import React, { ChangeEvent, FC, useState } from 'react';
 import { FiCheck } from 'react-icons/fi';
 import { v4 as uuidv4 } from 'uuid';
 import { icon, input, sideForm } from './SideForm.css';

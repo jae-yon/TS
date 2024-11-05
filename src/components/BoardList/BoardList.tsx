@@ -1,4 +1,4 @@
-import React, { FC, useRef, useState } from 'react'
+import React, { FC, useRef, useState } from 'react';
 import { FiPlusCircle } from 'react-icons/fi';
 import { useTypedSelector } from '../../hooks/redux';
 import SideForm from './SideForm/SideForm';
