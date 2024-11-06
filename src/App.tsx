@@ -1,13 +1,16 @@
 import { useState } from "react";
-import { appContainer, board, buttons } from "./App.css";
+import { appContainer, board, buttons, deleteButton, loggerButton } from "./App.css";
 import { useTypedSelector } from "./hooks/redux";
 import BoardList from "./components/BoardList/BoardList";
 import ListsContainer from "./components/ListsContainer/ListsContainer";
 import EditModal from "./components/EditModal/EditModal";
+import LoggerModal from "./components/LoggerModal/LoggerModal";
 
 function App() {
 
   const [activeBoardId, setActiveBoardId] = useState("board-0");
+
+  const [isLoggerOpen, setIsLoggerOpen] = useState(false);
 
   const boards = useTypedSelector(state => state.boards.boardArray);
 
@@ -19,6 +22,8 @@ function App() {
 
   return (
     <div className={appContainer}>
+
+      { isLoggerOpen ? <LoggerModal setIsLoggerOpen={setIsLoggerOpen} /> : null }
 
       { modalActive ? <EditModal /> : null }
 
@@ -33,11 +38,11 @@ function App() {
       </div>
 
       <div className={buttons}>
-        <button>
+        <button className={deleteButton}>
           게시판 삭제
         </button>
-        <button>
-
+        <button className={loggerButton} onClick={() => setIsLoggerOpen(!isLoggerOpen)}>
+          { isLoggerOpen ? "로그 내역 닫기" : "로그 내역 보기" }
         </button>
       </div>
 
