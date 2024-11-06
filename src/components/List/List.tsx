@@ -41,7 +41,7 @@ const List:FC<TListProps> = ({ list, boardId }) => {
         logAuthor: "user",
         logTimestamp: String(Date.now()),
       })
-    )
+    );
   }
 
   return (
