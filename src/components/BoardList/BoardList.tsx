@@ -1,9 +1,68 @@
-import React from 'react'
+import React, { FC, useRef, useState } from 'react';
+import { FiPlusCircle } from 'react-icons/fi';
+import { useTypedSelector } from '../../hooks/redux';
+import SideForm from './SideForm/SideForm';
+import { addButton, addSection, boardItem, boardItemActive, container, title } from './BoardList.css';
+import clsx from 'clsx';
 
-const BoardList = () => {
+type TBoardListProps = {
+  activeBoardId: string;
+  setActiveBoardId: React.Dispatch<React.SetStateAction<string>>;
+}
+
+const BoardList:FC<TBoardListProps> = ({ activeBoardId, setActiveBoardId }) => {
+
+  const { boardArray } = useTypedSelector(state => state.boards);
+
+  const [isFormOpen, setIsFormOpen] = useState(false);
+
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleClick = () => {
+    setIsFormOpen(!isFormOpen);
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 0);
+  }
+
   return (
-    <div>
+    <div className={container}>
+
+      <div className={title}>
+        board:
+      </div>
+
+      {boardArray.map((board, index) => (
+        <div
+          key={board.boardId}
+          className={
+            clsx(
+              {
+                [boardItemActive]:
+                boardArray.findIndex(b => b.boardId === activeBoardId) === index,
+              },
+              {
+                [boardItem]:
+                boardArray.findIndex(b => b.boardId === activeBoardId) !== index,
+              }
+            )
+          }
+          onClick={() => setActiveBoardId(boardArray[index].boardId)}
+        >
+          <div>
+            {board.boardName}
+          </div>
+        </div>
+      ))}
       
+      <div className={addSection}>
+        {
+          isFormOpen ?
+          <SideForm inputRef={inputRef} setFormOpen={setIsFormOpen} />
+          :
+          <FiPlusCircle className={addButton} onClick={handleClick} />
+        }
+      </div>
     </div>
   )
 }
