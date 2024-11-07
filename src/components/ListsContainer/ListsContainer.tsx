@@ -9,7 +9,7 @@ type TListsContainerProps = {
   lists: IList[];
 }
 
-const ListsContainer:FC<TListsContainerProps> = ({ lists, boardId }) => {
+const ListsContainer: FC<TListsContainerProps> = ({ lists, boardId }) => {
   return (
     <div className={listContainer}>
       {

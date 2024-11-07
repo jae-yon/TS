@@ -21,9 +21,28 @@ type TAddTaskAction = {
   task: ITask;
 }
 
+type TDeleteBoardAction = {
+  boardId: string;
+}
+
+type TDeleteTaskAction = {
+  boardId: string;
+  listId: string;
+  taskId: string;
+}
+
 type TDeleteListAction = {
   boardId: string;
   listId: string;
+}
+
+type TSortAction = {
+  boardIndex: number;
+  droppableIdStart: string;
+  droppableIdEnd: string;
+  droppableIndexStart: number;
+  droppableIndexEnd: number;
+  draggableId: string;
 }
 
 const initialState : TBoardsState = {
@@ -125,7 +144,13 @@ const boardsSlice = createSlice({
     },
 
     addBoard: (state, {payload}: PayloadAction<TAddBoardAction>) => {
-      state.boardArray.push(payload.board);
+      state.boardArray.push(payload.board)
+    },
+
+    deleteBoard: (state, {payload}: PayloadAction<TDeleteBoardAction>) => {
+      state.boardArray = state.boardArray.filter(
+        board => board.boardId !== payload.boardId
+      )
     },
 
     addList: (state, {payload}: PayloadAction<TAddListAction>) => {
@@ -133,6 +158,15 @@ const boardsSlice = createSlice({
         board.boardId === payload.boardId
         ? { ...board, lists: board.lists.push(payload.list) }
         : board
+      )
+    },
+
+    deleteList: (state, {payload}: PayloadAction<TDeleteListAction>) => {
+      state.boardArray = state.boardArray.map(board => 
+        board.boardId === payload.boardId ? {
+          ...board,
+          lists: board.lists.filter(list => list.listId !== payload.listId)
+        } : board
       )
     },
 
@@ -147,17 +181,68 @@ const boardsSlice = createSlice({
       )
     },
 
-    deleteList: (state, {payload}: PayloadAction<TDeleteListAction>) => {
+    updateTask: (state, {payload}: PayloadAction<TAddTaskAction>) => {
       state.boardArray = state.boardArray.map(board => 
-        board.boardId === payload.boardId ? {
+        board.boardId === payload.boardId
+        ? {
           ...board,
-          lists: board.lists.filter(list => list.listId !== payload.listId)
+          lists: board.lists.map(list => 
+            list.listId === payload.listId
+            ? {
+              ...list,
+              tasks: list.tasks.map(task =>
+                task.taskId === payload.task.taskId
+                ? payload.task : task
+              )
+            } : list
+          )
         } : board
       )
+    },
+
+    deleteTask: (state, {payload}: PayloadAction<TDeleteTaskAction>) => {
+      state.boardArray = state.boardArray.map(board => 
+        board.boardId === payload.boardId
+        ? {
+          ...board,
+          lists: board.lists.map(list => 
+            list.listId === payload.listId
+            ? {
+              ...list,
+              tasks: list.tasks.filter(task => task.taskId !== payload.taskId)
+            } : list
+          )
+        } : board
+      )
+    },
+
+    sort: (state, {payload}: PayloadAction<TSortAction>) => {
+      // "할 일" 위치를 같은 리스트에서 변경
+      if (payload.droppableIdStart === payload.droppableIdEnd) {
+        const list = state.boardArray[payload.boardIndex].lists.find(
+          list => list.listId === payload.droppableIdStart
+        )
+
+        // 변경시키는 아이템을 배열에서 지워주고, 리턴값으로 지운 아이템을 잡아준다.
+        const card = list?.tasks.splice(payload.droppableIndexStart, 1);
+        list?.tasks.splice(payload.droppableIndexEnd, 0, ...card!);
+      }
+      // "할 일" 위치를 다른 리스트로 변경
+      if (payload.droppableIdStart !== payload.droppableIdEnd) {
+        const listStart = state.boardArray[payload.boardIndex].lists.find(
+          list => list.listId === payload.droppableIdStart
+        )
+
+        const card = listStart?.tasks.splice(payload.droppableIndexStart, 1);
+        const listEnd = state.boardArray[payload.boardIndex].lists.find(
+          list => list.listId === payload.droppableIdEnd
+        )
+        listEnd?.tasks.splice(payload.droppableIndexEnd, 0, ...card!);
+      }
     }
   }
 });
 
-export const { setModalAcitive, addBoard, addList, addTask, deleteList } = boardsSlice.actions;
+export const { setModalAcitive, addBoard, addList, addTask, updateTask, deleteBoard, deleteList, deleteTask, sort } = boardsSlice.actions;
 
 export const boardsReducer = boardsSlice.reducer;
