@@ -36,6 +36,15 @@ type TDeleteListAction = {
   listId: string;
 }
 
+type TSortAction = {
+  boardIndex: number;
+  droppableIdStart: string;
+  droppableIdEnd: string;
+  droppableIndexStart: number;
+  droppableIndexEnd: number;
+  draggableId: string;
+}
+
 const initialState : TBoardsState = {
   modalActive: false,
   boardArray: [
@@ -205,10 +214,35 @@ const boardsSlice = createSlice({
           )
         } : board
       )
+    },
+
+    sort: (state, {payload}: PayloadAction<TSortAction>) => {
+      // "할 일" 위치를 같은 리스트에서 변경
+      if (payload.droppableIdStart === payload.droppableIdEnd) {
+        const list = state.boardArray[payload.boardIndex].lists.find(
+          list => list.listId === payload.droppableIdStart
+        )
+
+        // 변경시키는 아이템을 배열에서 지워주고, 리턴값으로 지운 아이템을 잡아준다.
+        const card = list?.tasks.splice(payload.droppableIndexStart, 1);
+        list?.tasks.splice(payload.droppableIndexEnd, 0, ...card!);
+      }
+      // "할 일" 위치를 다른 리스트로 변경
+      if (payload.droppableIdStart !== payload.droppableIdEnd) {
+        const listStart = state.boardArray[payload.boardIndex].lists.find(
+          list => list.listId === payload.droppableIdStart
+        )
+
+        const card = listStart?.tasks.splice(payload.droppableIndexStart, 1);
+        const listEnd = state.boardArray[payload.boardIndex].lists.find(
+          list => list.listId === payload.droppableIdEnd
+        )
+        listEnd?.tasks.splice(payload.droppableIndexEnd, 0, ...card!);
+      }
     }
   }
 });
 
-export const { setModalAcitive, addBoard, addList, addTask, updateTask, deleteBoard, deleteList, deleteTask } = boardsSlice.actions;
+export const { setModalAcitive, addBoard, addList, addTask, updateTask, deleteBoard, deleteList, deleteTask, sort } = boardsSlice.actions;
 
 export const boardsReducer = boardsSlice.reducer;
