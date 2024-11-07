@@ -11,7 +11,7 @@ type TSideFormProps = {
   inputRef: React.RefObject<HTMLInputElement>
 }
 
-const SideForm:FC<TSideFormProps> = ({ setFormOpen, inputRef }) => {
+const SideForm:FC<TSideFormProps> = ({ setFormOpen }) => {
 
   const dispatch = useTypedDispatch();
 
